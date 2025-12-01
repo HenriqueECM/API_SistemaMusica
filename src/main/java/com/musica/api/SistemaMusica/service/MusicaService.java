@@ -8,18 +8,28 @@ import com.musica.api.SistemaMusica.repository.MusicaRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Service
 public class MusicaService {
     private final MusicaRepository repository;
     private final MusicaMapper mapper;
+
     public MusicaResponseDto criar(MusicaRequestDto request) {
-        if(repository.existsByNome(request)){
+        if(repository.existsByNome(request.nome())){
             throw new RuntimeException("Esta música já existe.");
         }
 
         Musica musica = mapper.paraEntidade(request);
 
         return mapper.toResponse(repository.save(musica));
+    }
+
+    public List<MusicaResponseDto> buscarTodos (){
+        return repository.findAll()
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
     }
 }
